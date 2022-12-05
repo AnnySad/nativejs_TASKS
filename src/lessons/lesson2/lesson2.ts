@@ -68,7 +68,7 @@ counter()
 // reset: установить счетчик в 0;
 // set: установить счетчик в заданное значение;
 
-
+/*
 function makeCounter(n: number) {
 
     const obj = {
@@ -94,7 +94,7 @@ function makeCounter(n: number) {
 
 }
 
-console.log(makeCounter(1).set(7))
+console.log(makeCounter(1).set(7))*/
 
 // Task 04*
 // Реализовать функцию superSum которая принимает число в качестве аргумента, которое указывает на количество слагаемых
@@ -108,11 +108,51 @@ console.log(makeCounter(1).set(7))
 
 // P.S. типизируйте только аргументы, а при вызове функции используйте @ts-ignore
 
+const superSum = (fn: { (x: number, y: number): number; (x: number, y: number): number; call?: any; }, seed: number) => {
+    const reduceValue = (args: any[], seedValue: number) =>
+        args.reduce((acc, a) => {
+            return fn.call(fn, acc, a);
+        }, seedValue);
+    const next = (...args: undefined[]) => {
+        // @ts-ignore
+        return (...x) => {
+            if (!x.length) {
+                return reduceValue(args, seed);
+            }
+            return next(...args, reduceValue(x, seed));
+        };
+    };
+    return next();
+};
+
+const iSum = superSum((x: any, y: any) => x + y, 0);
+
+console.log(iSum(0)()); // 0
+console.log(iSum(3)(2)(5)(3)()); // 13
+console.log(iSum(3)(2)(5,3)()); // 13
+console.log(iSum(3)(2,5,3)()); // 13
+console.log(iSum(3)(2,5)(3)()); // 13
+console.log(iSum(3)(2,5)(3,9)()); // 22
+
+
+
+
+
 // Task 05
 // решить все задачи по рекурсии которые даны в конце статьи https://learn.javascript.ru/recursion
 
 // Task 06
 // написать функцию, которая повторяет функционал метода flat массива на всю глубину.
+
+function customFlat(arr: any):any {
+    //@ts-ignore
+    return arr.reduce((acc, current) => {
+        if(Array.isArray(current)) return acc.concat(customFlat(current))
+        return [...acc, current]
+    }, [])
+}
+let a = [1,2,3,[4,5,[6,7]]]
+console.log(customFlat(a))
 
 // just a plug
 export default () => {};
